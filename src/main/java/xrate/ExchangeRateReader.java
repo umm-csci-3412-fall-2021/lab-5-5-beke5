@@ -92,16 +92,17 @@ public class ExchangeRateReader {
 
         // TODO Your code here
 
-        // Construct the correct URL
-        String newURL = this.baseURL + year + "-" + month + "-" + day + "?access_key=" + accessKey;
+        // Construct the correct URL + inputstream
+        String newURL = makeURL(year, month, day);
         URL url = new URL(newURL);
         InputStream inputStream = url.openStream();
 
         JSONTokener tokener = new JSONTokener(inputStream);
 
+        JSONObject ratesInfo = new JSONObject(tokener);
 
-        // Remove the next line when you've implemented this method.
-        throw new UnsupportedOperationException();
+        return getRateForCurrency(ratesInfo, currencyCode);
+
     }
 
     /**
@@ -129,6 +130,20 @@ public class ExchangeRateReader {
          */
         
         // TODO Your code here
+        // *to* divided by *from*
+
+        String newURL = makeURL(year, month, day);
+        URL url = new URL(newURL);
+        InputStream inputStream = url.openStream();
+
+        JSONTokener tokener = new JSONTokener(inputStream);
+
+        JSONObject ratesInfo = new JSONObject(tokener);
+
+        float from = getRateForCurrency(ratesInfo, fromCurrency);
+        float to = getRateForCurrency(ratesInfo, toCurrency);
+
+
 
         // Remove the next line when you've implemented this method.
         throw new UnsupportedOperationException();
@@ -137,4 +152,15 @@ public class ExchangeRateReader {
     // looks like Fixer.io has year-month-day appended to base URL
     // on Fixer's website, it looks like the appended URL is just the
     // base URL with latest appended.
+    private String makeURL(int year, int month, int day)
+    {
+        String newURL = this.baseURL + year + "-" + month + "-" + day + "?access_key=" + accessKey;
+        return newURL;
+    }
+
+    private float getRateForCurrency(JSONObject ratesInfo, String currency)
+    {
+        JSONObject rate = ratesInfo.getJSONObject("rates");
+        return rate.getFloat(currency);
+    }
 }
