@@ -125,20 +125,20 @@ public class ExchangeRateReader {
          */
         
         // TODO Your code here
-        // *to* divided by *from*
+        // *from* divided by *to*
 
         JSONObject ratesInfo = helper(year, month, day);
 
         float from = getRateForCurrency(ratesInfo, fromCurrency);
         float to = getRateForCurrency(ratesInfo, toCurrency);
 
-        return (to / from);
+        return (from / to);
     }
 
     // looks like Fixer.io has year-month-day appended to base URL
     // on Fixer's website, it looks like the appended URL is just the
     // base URL with latest appended.
-    private String makeURL(int year, int month, int day)
+    private String makeURL(int year, String month, String day)
     {
         String newURL = this.baseURL + year + "-" + month + "-" + day + "?access_key=" + accessKey;
         return newURL;
@@ -154,7 +154,14 @@ public class ExchangeRateReader {
     // name later.
     private JSONObject helper(int year, int month, int day)
     throws IOException{
-        String newURL = makeURL(year, month, day);
+        String monthS = Integer.toString(month);
+        String dayS = Integer.toString(day);
+        if(monthS.length() == 1)
+            monthS = "0" + monthS;
+        if(dayS.length() == 1)
+            dayS = "0" + dayS;
+
+        String newURL = makeURL(year, monthS, dayS);
         URL url = new URL(newURL);
         InputStream inputStream = url.openStream();
 
