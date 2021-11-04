@@ -94,7 +94,7 @@ public class ExchangeRateReader {
 
         // Construct the correct URL + inputstream
 
-        JSONObject ratesInfo = helper(year,month, day);
+        JSONObject ratesInfo = createRatesInfo(year,month, day);
 
         return getRateForCurrency(ratesInfo, currencyCode);
 
@@ -127,7 +127,7 @@ public class ExchangeRateReader {
         // TODO Your code here
         // *from* divided by *to*
 
-        JSONObject ratesInfo = helper(year, month, day);
+        JSONObject ratesInfo = createRatesInfo(year, month, day);
 
         float from = getRateForCurrency(ratesInfo, fromCurrency);
         float to = getRateForCurrency(ratesInfo, toCurrency);
@@ -136,26 +136,45 @@ public class ExchangeRateReader {
     }
 
     // looks like Fixer.io has year-month-day appended to base URL
-    // on Fixer's website, it looks like the appended URL is just the
-    // base URL with latest appended.
+    // Makes the appropriate URL with the year, month, day and access key
+    // information appended to the baseURL.
     private String makeURL(int year, String month, String day)
     {
         String newURL = this.baseURL + year + "-" + month + "-" + day + "?access_key=" + accessKey;
         return newURL;
     }
 
+    /**
+     * Gets the currency rate of a given currency.
+     * @param ratesInfo JSONObject
+     * @param currency  Currency code
+     * @return float, the currency rate associated with the given currency code.
+     */
     private float getRateForCurrency(JSONObject ratesInfo, String currency)
     {
         JSONObject rate = ratesInfo.getJSONObject("rates");
         return rate.getFloat(currency);
     }
 
-    // for now this method will be called helper.  Will think of better
-    // name later.
-    private JSONObject helper(int year, int month, int day)
+
+    // helper function that does stuff.
+    /**
+     * Creates the JSONObject that will be parsed.
+     * @param year int, a four digit number
+     * @param month int, a 2 or 1 digit number
+     * @param day int, a 2 or 1 digit number
+     * @return JSONObject, the JSON object to be parsed.
+     * @throws IOException
+     */
+    private JSONObject createRatesInfo(int year, int month, int day)
     throws IOException{
+        // convert the ints month and day to strings
         String monthS = Integer.toString(month);
         String dayS = Integer.toString(day);
+
+        // check to see if the month and day are single digits,
+        // if they are, append a 0 to the front, and if not,
+        // do nothing.
         if(monthS.length() == 1)
             monthS = "0" + monthS;
         if(dayS.length() == 1)
