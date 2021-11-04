@@ -20,5 +20,6 @@
     </orderEntry>
     <orderEntry type="library" name="org.hamcrest:hamcrest-junit:2.0.0.0" level="project" />
     <orderEntry type="library" name="com.google.code.gson:gson:2.8.5" level="project" />
+    <orderEntry type="library" name="json" level="project" />
   </component>
 </module>

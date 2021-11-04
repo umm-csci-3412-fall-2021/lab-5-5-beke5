@@ -1,6 +1,9 @@
-package xrate;
+package main.java.xrate;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import org.json.*;
 
 /**
  * Provide access to basic currency exchange rate services.
@@ -8,6 +11,7 @@ import java.io.IOException;
 public class ExchangeRateReader {
 
     private String accessKey;
+    private String baseURL;
 
     /**
      * Construct an exchange rate reader using the given base URL. All requests will
@@ -30,6 +34,8 @@ public class ExchangeRateReader {
 
         // TODO Your code here
 
+        this.baseURL = baseURL;
+
         // Reads the Fixer.io API access key from the appropriate
         // environment variable.
         // You don't have to change this call.
@@ -37,7 +43,7 @@ public class ExchangeRateReader {
     }
 
     /**
-     * This reads the `fixer_io` access key from from the system environment and
+     * This reads the `fixer_io` access key from the system environment and
      * assigns it to the field `accessKey`.
      * 
      * You don't have to change anything here.
@@ -86,8 +92,12 @@ public class ExchangeRateReader {
 
         // TODO Your code here
 
-        // Remove the next line when you've implemented this method.
-        throw new UnsupportedOperationException();
+        // Construct the correct URL + inputstream
+
+        JSONObject ratesInfo = createRatesInfo(year,month, day);
+
+        return getRateForCurrency(ratesInfo, currencyCode);
+
     }
 
     /**
@@ -115,8 +125,69 @@ public class ExchangeRateReader {
          */
         
         // TODO Your code here
+        // *from* divided by *to*
 
-        // Remove the next line when you've implemented this method.
-        throw new UnsupportedOperationException();
+        JSONObject ratesInfo = createRatesInfo(year, month, day);
+
+        float from = getRateForCurrency(ratesInfo, fromCurrency);
+        float to = getRateForCurrency(ratesInfo, toCurrency);
+
+        return (from / to);
+    }
+
+    // looks like Fixer.io has year-month-day appended to base URL
+    // Makes the appropriate URL with the year, month, day and access key
+    // information appended to the baseURL.
+    private String makeURL(int year, String month, String day)
+    {
+        String newURL = this.baseURL + year + "-" + month + "-" + day + "?access_key=" + accessKey;
+        return newURL;
+    }
+
+    /**
+     * Gets the currency rate of a given currency.
+     * @param ratesInfo JSONObject
+     * @param currency  Currency code
+     * @return float, the currency rate associated with the given currency code.
+     */
+    private float getRateForCurrency(JSONObject ratesInfo, String currency)
+    {
+        JSONObject rate = ratesInfo.getJSONObject("rates");
+        return rate.getFloat(currency);
+    }
+
+
+    // helper function that does stuff.
+    /**
+     * Creates the JSONObject that will be parsed.
+     * @param year int, a four digit number
+     * @param month int, a 2 or 1 digit number
+     * @param day int, a 2 or 1 digit number
+     * @return JSONObject, the JSON object to be parsed.
+     * @throws IOException
+     */
+    private JSONObject createRatesInfo(int year, int month, int day)
+    throws IOException{
+        // convert the ints month and day to strings
+        String monthS = Integer.toString(month);
+        String dayS = Integer.toString(day);
+
+        // check to see if the month and day are single digits,
+        // if they are, append a 0 to the front, and if not,
+        // do nothing.
+        if(monthS.length() == 1)
+            monthS = "0" + monthS;
+        if(dayS.length() == 1)
+            dayS = "0" + dayS;
+
+        String newURL = makeURL(year, monthS, dayS);
+        URL url = new URL(newURL);
+        InputStream inputStream = url.openStream();
+
+        JSONTokener tokener = new JSONTokener(inputStream);
+
+        JSONObject ratesInfo = new JSONObject(tokener);
+
+        return ratesInfo;
     }
 }

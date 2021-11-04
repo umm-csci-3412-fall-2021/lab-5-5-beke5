@@ -1,4 +1,4 @@
-package xrate;
+package main.java.xrate;
 
 /**
  * A custom exception class that we'll throw if an attempt to read a API access
