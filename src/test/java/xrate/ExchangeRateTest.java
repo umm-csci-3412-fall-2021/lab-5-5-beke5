@@ -1,7 +1,8 @@
-package xrate;
+package test.java.xrate;
 
 import java.io.IOException;
 
+import main.java.xrate.ExchangeRateReader;
 import org.junit.Ignore;
 import org.junit.Test;
 

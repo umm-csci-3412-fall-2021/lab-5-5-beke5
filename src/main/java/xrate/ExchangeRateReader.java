@@ -1,6 +1,9 @@
-package xrate;
+package main.java.xrate;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import org.json.*;
 
 /**
  * Provide access to basic currency exchange rate services.
@@ -8,6 +11,7 @@ import java.io.IOException;
 public class ExchangeRateReader {
 
     private String accessKey;
+    private String baseURL;
 
     /**
      * Construct an exchange rate reader using the given base URL. All requests will
@@ -30,6 +34,8 @@ public class ExchangeRateReader {
 
         // TODO Your code here
 
+        this.baseURL = baseURL;
+
         // Reads the Fixer.io API access key from the appropriate
         // environment variable.
         // You don't have to change this call.
@@ -37,7 +43,7 @@ public class ExchangeRateReader {
     }
 
     /**
-     * This reads the `fixer_io` access key from from the system environment and
+     * This reads the `fixer_io` access key from the system environment and
      * assigns it to the field `accessKey`.
      * 
      * You don't have to change anything here.
@@ -86,6 +92,14 @@ public class ExchangeRateReader {
 
         // TODO Your code here
 
+        // Construct the correct URL
+        String newURL = this.baseURL + year + "-" + month + "-" + day + "?access_key=" + accessKey;
+        URL url = new URL(newURL);
+        InputStream inputStream = url.openStream();
+
+        JSONTokener tokener = new JSONTokener(inputStream);
+
+
         // Remove the next line when you've implemented this method.
         throw new UnsupportedOperationException();
     }
@@ -119,4 +133,8 @@ public class ExchangeRateReader {
         // Remove the next line when you've implemented this method.
         throw new UnsupportedOperationException();
     }
+
+    // looks like Fixer.io has year-month-day appended to base URL
+    // on Fixer's website, it looks like the appended URL is just the
+    // base URL with latest appended.
 }
