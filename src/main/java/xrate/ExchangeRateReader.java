@@ -93,13 +93,8 @@ public class ExchangeRateReader {
         // TODO Your code here
 
         // Construct the correct URL + inputstream
-        String newURL = makeURL(year, month, day);
-        URL url = new URL(newURL);
-        InputStream inputStream = url.openStream();
 
-        JSONTokener tokener = new JSONTokener(inputStream);
-
-        JSONObject ratesInfo = new JSONObject(tokener);
+        JSONObject ratesInfo = helper(year,month, day);
 
         return getRateForCurrency(ratesInfo, currencyCode);
 
@@ -132,21 +127,12 @@ public class ExchangeRateReader {
         // TODO Your code here
         // *to* divided by *from*
 
-        String newURL = makeURL(year, month, day);
-        URL url = new URL(newURL);
-        InputStream inputStream = url.openStream();
-
-        JSONTokener tokener = new JSONTokener(inputStream);
-
-        JSONObject ratesInfo = new JSONObject(tokener);
+        JSONObject ratesInfo = helper(year, month, day);
 
         float from = getRateForCurrency(ratesInfo, fromCurrency);
         float to = getRateForCurrency(ratesInfo, toCurrency);
 
-
-
-        // Remove the next line when you've implemented this method.
-        throw new UnsupportedOperationException();
+        return (to / from);
     }
 
     // looks like Fixer.io has year-month-day appended to base URL
@@ -162,5 +148,20 @@ public class ExchangeRateReader {
     {
         JSONObject rate = ratesInfo.getJSONObject("rates");
         return rate.getFloat(currency);
+    }
+
+    // for now this method will be called helper.  Will think of better
+    // name later.
+    private JSONObject helper(int year, int month, int day)
+    throws IOException{
+        String newURL = makeURL(year, month, day);
+        URL url = new URL(newURL);
+        InputStream inputStream = url.openStream();
+
+        JSONTokener tokener = new JSONTokener(inputStream);
+
+        JSONObject ratesInfo = new JSONObject(tokener);
+
+        return ratesInfo;
     }
 }
